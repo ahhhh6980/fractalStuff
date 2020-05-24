@@ -8,8 +8,8 @@ print("Initialized at "+str(datetime.now(timezone('EST')))[11:19])
 def runIteration(z,c,n):
     #iteration = lambda a : a**1.5 + c / (a+1)
     #original:
-    iteration = lambda a : a**a + (a/(c+complex(0.001,0.001)))
-        
+    #iteration = lambda a : a**a + (a/(c+complex(0.001,0.001)))
+    iteration = lambda a : ( a**2 ) + c
     for i in range(n):
         try:
             z = iteration(z)
@@ -57,18 +57,19 @@ def returnImage(ratio,resolution,frame,zoom,offset):
     pool.join()
     return img
 
-ratio = [1,1]
-resolution = 2
+ratio = [4,2]
+resolution = 4
 frame = [round(60*ratio[0]*resolution),round(60*ratio[1]*resolution)]
-zoom = 0.1
+zoom = 0.4
 #offset = [225,275]
 #offset = [550,0]
 #offset = [-5500,0]
-offset = [-10000,-700]
+#offset = [-9900,-300]
+offset = [100,0]
 offset[0] *= resolution*zoom
 offset[1] *= resolution*zoom
 img = Image.new('HSV', [frame[0],frame[1]], 255)
-inputA = complex(1,0)
+inputA = complex(0,0)
 data = img.load()
 if __name__=="__main__":
     returnImage(ratio,resolution,frame,zoom,offset).convert(mode="RGB").save('images/imageNew.png')
