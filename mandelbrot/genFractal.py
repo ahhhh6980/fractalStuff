@@ -6,21 +6,20 @@ from functools import partial
 from multiprocessing import Process
 print("Initialized at "+str(datetime.now(timezone('EST')))[11:19])
 def runIteration(z,c,n):
-    #iteration = lambda a : a**1.5 + c / (a+1)
-    #original:
-    #iteration = lambda a : a**a + (a/(c+complex(0.001,0.001)))
-    iteration = lambda a : ( a**2 ) + c
-    for i in range(n):
-        try:
-            z = iteration(z)
-            if(str(z)=="(nan+nanj)"):
-                print("YES")
-                return -2
-            if(z.real>100):
-                return round(i/n*360)
-        except OverflowError:
-            return round(i/n*360)
-    return -1
+	iteration = lambda a : ( a**2 ) + c
+	#iteration = lambda a : a**a + ( a / ( c + complex(0.001,0.001) ) )
+	for i in range(n):
+		try:
+			z = iteration(z)
+			if(str(z)=="(nan+nanj)"):
+				#print("YES")
+				return -2
+				#return round(i/n*360)
+			if(z.real>20 or z.imag>20):
+				return round(i/n*360)
+		except Exception:
+			return round(i/n*360)
+	return -1
 
 def pixelToComplex(x,y,Z,s,offset):
     return complex((((x -offset[0]- (s[0]/2))/s[0])/Z)*(s[0]/s[1]) ,((y -offset[1]- (s[1]/2))/s[1])/Z )
