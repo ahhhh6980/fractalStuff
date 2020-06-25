@@ -85,6 +85,8 @@ def iteration(a,c):
 	#return a**a + ( a / ( c + complex(0.001,0.001) ) )
 	#return a**2 + c**(a/c) 
 
+#styles include; "monochrome" and "color"
+#scales include; "linear" and "logarithmic"
 coloring = {
 	"style":"color",
 	"scale":"linear",
