@@ -42,7 +42,7 @@ def returnImage(ratio,resolution,frame,zoom,offset):
     print(img)
     print("starting")
     temp = []
-    pool = multiprocessing.Pool(multiprocessing.cpu_count()-2)
+    pool = multiprocessing.Pool(multiprocessing.cpu_count()-excludeCores)
     for x in range(frame[0]):
         temp = (pool.map(partial(setPixel, x=x,ratio=ratio,resolution=resolution,frame=frame,zoom=zoom,offset=offset), [y for y in range(frame[1])]))
         
@@ -76,8 +76,12 @@ def returnImage(ratio,resolution,frame,zoom,offset):
 
 # =======================
 # ===START OF SETTINGS===
+	
 # =======================
-print(multiprocessing.cpu_count()-2)
+#specify cores to be excluded from multiprocessing;
+excludeCores = 2
+print(multiprocessing.cpu_count()-excludeCores)
+
 # -- iteration expression, with some other fun ones --
 def iteration(a,c):
 	return a**2 + c
@@ -115,7 +119,8 @@ inputA = complex(0,0)
 
 # save location relative to where this script is run, as well as filename;
 location = 'images/'
-name = 'imageNew'
+name = 'fractal'
+
 # =====================
 # ===END OF SETTINGS===
 # =====================
