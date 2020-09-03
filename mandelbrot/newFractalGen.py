@@ -4,7 +4,6 @@ import multiprocessing
 from decimal import *
 from PIL import Image
 import datetime
-from pytz import timezone
 
 # Functions
 def log(b,x): 
@@ -28,30 +27,37 @@ def split( ):
     return temp
 
 # Setup
-ratio = [4,3.5]
-resolution = 20
+ratio = [16,9]
+# Be careful, high resolutions take a LOT of ram
+# For 16:9, 5 gives you a 4800px X 2700px image, which may require up to or over 16gb of ram
+resolution = 5
 frame = [ round( 60*ratio[0]*resolution ), round( 60*ratio[1]*resolution ) ]
 img = Image.new( 'HSV', [ frame[0], frame[1] ], (100,0,360) )
 data = img.load()
 
 # Processing
 
-zoom = 0.7
-pLimit = 100
+#zoom = 0.4
+zoom = 1
+pLimit = 2500
 l = pLimit
-position = complex(0,0.5)
+position = complex(2,1.5)
+isMandelbrot = False
 
 # Computation function
 def computePixel( pixel ):
-    c = (complex( mapRange( pixel[0] , [0,frame[0]], [-1,1] ), (frame[1]/frame[0])*mapRange( pixel[1] , [0,frame[1]], [-1,1] ) ) - (complex(0.5,0.5)-position))/zoom
+    c = (complex( mapRange( pixel[0] , [0,frame[0]], [-1,1] )/zoom, (frame[1]/frame[0])*mapRange( pixel[1] , [0,frame[1]], [-1,1] )/zoom ) - (complex(0.5,0.5)-position))
     z = c
     p = np.sqrt((c.real-0.25)**2 + c.imag**2)
 
     # Exclude cardioid and main bulb
-    if(c.real > p - (2*(p**2)) + 0.25 and (c.real+1)**2 + (c.imag**2) >1/16 ):
+    if( (isMandelbrot==False) or (c.real > p - (2*(p**2)) + 0.25 and (c.real+1)**2 + (c.imag**2) >1/16) ):
         for i in range(l):
             try:
-                z = z**2 + c
+                if(isMandelbrot):
+                    z = z**2 + c
+                else:
+                    z = z**z + ( z / ( c + complex(0.001,0.001) ) )
                 if(str(z)=="(nan+nanj)"):
                     #print("YES")
                     return [pixel,(scaleToRangeSimple(i,[0,l],[0,360],0.5))]
@@ -61,6 +67,15 @@ def computePixel( pixel ):
                 return [pixel,(scaleToRangeSimple(i,[0,l],[0,360],0.5))]
     return [pixel,-1]
     #return -1"""
+
+def getSplit( i, s):
+    output = []
+    temp = []
+    for y in range(frame[1]):
+        if( y ): pass
+        for x in range(frame[0]):
+            temp.append([x,y])
+    return temp
     
 # Saving Info
 location = 'images/'
@@ -97,5 +112,5 @@ if __name__=="__main__":
     now = datetime.datetime.now()
     d = now - start
     print("\nFinished in "+str(d.total_seconds())+" Seconds!")
-    img.convert( mode="RGB" ).save( location+name+"_"+str(7)+'.png' )
+    img.convert( mode="RGB" ).save( location+name+"_"+str(9)+'.png' )
     
