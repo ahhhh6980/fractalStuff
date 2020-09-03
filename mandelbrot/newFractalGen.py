@@ -36,6 +36,7 @@ img = Image.new( 'HSV', [ frame[0], frame[1] ], (100,0,360) )
 data = img.load()
 
 # Processing
+availableCores = 10
 
 #zoom = 0.4
 zoom = 1
@@ -90,7 +91,7 @@ if __name__=="__main__":
     now = datetime.datetime.now()
 
     print("\nSTARTING MULTIPROCESSING\n@"+getTime())
-    p = multiprocessing.Pool(10)
+    p = multiprocessing.Pool(availableCores)
     r = p.map(computePixel,split())
     p.close();p.join()
     i = 0
