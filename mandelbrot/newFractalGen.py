@@ -61,15 +61,6 @@ def computePixel( pixel ):
                 return [pixel,(scaleToRangeSimple(i,[0,l],[0,360],0.5))]
     return [pixel,-1]
     #return -1"""
-
-def getSplit( i, s):
-    output = []
-    temp = []
-    for y in range(frame[1]):
-        if( y ): pass
-        for x in range(frame[0]):
-            temp.append([x,y])
-    return temp
     
 # Saving Info
 location = 'images/'
