@@ -44,12 +44,12 @@ zoom = 0.9
 # Be careful, high resolutions take a LOT of ram
 # For 16:9, 5 gives you a 4800px X 2700px image, which may require up to or over 8gb of ram
 # resolution * 60 * ratio = image size
-resolution = 2
+resolution = 5
 ratio = [ 1, 1 ]
 
 # slight color adjustment
-cScale = 1
-cOffset = 45 * 0
+cScale = 2
+cOffset = 45 * 2
 colorExponent = 0.75
 lightnessExponent = 1.5
 lightnessScale = 2
