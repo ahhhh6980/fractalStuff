@@ -190,7 +190,11 @@ if __name__=="__main__":
     scale = 1
     if( scaling or frame[0] < 1920 or frame[1] < 1920 ): 
         scale = 1920//frame[0] if frame[0] < 1920 else 1920 // frame[1]
-    img.convert( mode = "RGB" ).resize( (  frame[0] * scale, frame[1] * scale  ), 0 ).save( location + name + '.png', pnginfo = metadata )
+    try:
+        img.convert( mode = "RGB" ).resize( (  frame[0] * scale, frame[1] * scale  ), 0 ).save( location + name + '.png', pnginfo = metadata )
+    except FileNotFoundError:
+        print("Images folder not found, saving to current working directory")
+        img.convert( mode = "RGB" ).resize( (  frame[0] * scale, frame[1] * scale  ), 0 ).save( name + '.png', pnginfo = metadata )
 
     now = datetime.datetime.now()
     d = now - start
