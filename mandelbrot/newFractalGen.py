@@ -5,6 +5,7 @@ import multiprocessing
 from decimal import *
 from PIL import Image, ImageOps
 import datetime
+from numpy import ogrid
 
 # Functions
 def log(b,x): 
@@ -22,11 +23,7 @@ def scaleToRangeSimple( i, a, b, e ):
 def getTime(): return ("{"+str(now.hour)+"h:"+str(now.minute)+"m:"+str(now.second)+"."+str(now.microsecond)+"s}")
 
 # for pre-generating
-def split( ):
-    temp = []
-    for y in range(frame[1]):
-        for x in range(frame[0]): temp.append([x,y])
-    return temp
+def split( ): return [[x,y] for x in range(frame[0]) for y in range(frame[1])]
 
 availableCores = multiprocessing.cpu_count()
 
@@ -48,23 +45,23 @@ if(theta!=0):
 zoom = 2
 
 # Be careful, high resolutions take a LOT of ram
-# For 16:9, 5 gives you a 4800px X 2700px image, which may require up to or over 16gb of ram
+# For 16:9, 5 gives you a 4800px X 2700px image, which may require up to or over 8gb of ram
 # resolution * 60 * ratio = image size
-resolution = 80
+resolution = 20
 ratio = [1,1]
 
 # slight color adjustment
-cScale = 1
-cOffset = 45*4
+cScale = 0.25
+cOffset = 45*0
 colorExponent = 0.55
-lightnessExponent = 1.25
-lightnessScale = 4
+lightnessExponent = 1.2
+lightnessScale = 1
 # iteration limit
 l=2500
 
 # These can override settings
 isMandelbrot = False
-isBurningShip = False
+isBurningShip = True
 isJulia = False
 juliaCoord = complex(0.3,0.5)
 
@@ -90,7 +87,7 @@ if(isBurningShip):
 
 # Saving Info
 location = 'images/'
-name = 'SpadeFractalZoom'
+name = 'mandelbrot'
 consoleReadouts = 10
 scaling = False
 
@@ -167,13 +164,11 @@ if __name__=="__main__":
     print("\nSTARTING COLOR ASSIGNMENT\n@"+getTime())
     for e in r:
         i+=1
-        color = e[1][0]
-        x,y = e[0][0],e[0][1]
         if((i/(frame[0]*frame[1]) * 100)%int(100/consoleReadouts) == 0):
             now = datetime.datetime.now()
             print(str(int((i/(frame[0]*frame[1])) * 100))+"%","@ "+getTime(),"("+str(i)+"/"+str(frame[0]*frame[1])+")")
-        if(color==-1): data[x,y] = (0,0,0)
-        else: data[x,y] = (int(((color*cScale)+cOffset)%360), 256, lightnessScale*int((e[1][1])**lightnessExponent))
+        if(e[1][0]==-1): data[(e[0][0],e[0][1])] = (0,0,0)
+        else: data[(e[0][0],e[0][1])] = (int(((e[1][0]*cScale)+cOffset)%360), 256, lightnessScale*int((e[1][1])**lightnessExponent))
 
     now = datetime.datetime.now() 
     print("\nSAVING IMAGE\n@"+getTime())
