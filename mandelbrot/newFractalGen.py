@@ -1,11 +1,7 @@
-import webbrowser
-import math
 import numpy as np
 import multiprocessing
-from decimal import *
 from PIL import Image, ImageOps
 import datetime
-from numpy import ogrid
 
 # Functions
 def log(b,x): 
