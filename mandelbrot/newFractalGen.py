@@ -93,11 +93,11 @@ if(isMandelbrot):
 
 if(isBurningShip):
     cScale = 0.75
-    cOffset = 2
-    colorExponent = 0.05
+    cOffset = 90
     lightnessExponent = 2.0
     lightnessScale = 2
     resolution = 2
+    colorExponent = 0.4
     zoom = 55
     ratio = [ 3, 6 ]
     position = complex( -1.124, 0.4685 )
@@ -107,6 +107,7 @@ if(isJulia):
     position = complex( 0.5, 0.5 )
     l = 2500
     colorExponent = 0.15 * (cScale/2)
+    colorExponent = 0.1
     ratio = [ 3, 3 ]
 
 frame = [ round( 60 * ratio[0] * resolution ), round( 60 * ratio[1] * resolution ) ]
