@@ -44,8 +44,6 @@ def cotanh(n): return np.cosh(n)/np.sinh(n)
 # Config.get('section', 'option')
 # Config.getboolean('section', 'option')
 
-loadDefaults = config.getboolean('main', 'loadDefaults')
-
 availableCores = multiprocessing.cpu_count() - int(config.get('misc', 'threadExclude'))
 posX = float(config.get('misc', 'posX'))
 posY = float(config.get('misc', 'posY'))
@@ -82,6 +80,8 @@ isJulia = config.getboolean('main', 'isJulia')
 juliaX = float(config.get('misc', 'juliaCoordX'))
 juliaY = float(config.get('misc', 'juliaCoordY'))
 juliaCoord = complex( juliaX, juliaY )
+
+loadDefaults = config.getboolean('main', 'loadDefaults')
 
 if(isMandelbrot and loadDefaults):
     cScale = 0.5
