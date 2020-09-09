@@ -3,6 +3,9 @@ import multiprocessing
 from PIL import Image, ImageOps
 from PIL.PngImagePlugin import PngImageFile, PngInfo
 import datetime
+from configparser import ConfigParser
+config = ConfigParser()
+config.read('config.ini')
 
 # Functions
 def log( b, x ): 
@@ -33,101 +36,99 @@ def splitINFO( sV, i ):
 
 def writeMetaData():
     m = PngInfo()
-    m.add_text( "Creator:", "Ahhhh#6980" )
+    m.add_text( "Creator:", config.get('fileNaming', 'creatorTag') )
     return m
 
-availableCores = multiprocessing.cpu_count()
-# Setup
-# Coordinate on fractal image will be centered on
-position = complex( 1.45, 0.5 )
-# If you want to angle the fractal
-# Slightly slower rendering if value is not zero
-# p offsets vertically and horizontally independant of rotation :)
-theta = 0
+def cotanh(n): return np.cosh(n)/np.sinh(n)
+
+# Config.get('section', 'option')
+# Config.getboolean('section', 'option')
+
+availableCores = multiprocessing.cpu_count() - int(config.get('misc', 'threadExclude'))
+posX = float(config.get('misc', 'posX'))
+posY = float(config.get('misc', 'posY'))
+position = complex( posX, posY )
+
+theta = int(config.get('misc', 'angle'))
 angle = (theta * np.pi) / 180
-p = complex( -1, 0.35 )
-if(theta!=0):
-    position += complex( p.real * np.cos(angle) + p.imag * np.sin(angle), (p.real) * np.sin(-angle) + p.imag * np.cos(angle) )
 
-zoom = 0.5
+px = float(config.get('misc', 'anglePosX'))
+py = float(config.get('misc', 'anglePosY'))
+p = complex( px, py )
+if(theta!=0): position += complex( p.real * np.cos(angle) + p.imag * np.sin(angle), (p.real) * np.sin(-angle) + p.imag * np.cos(angle) )
 
-# Be careful, high resolutions take a LOT of ram
-# For 16:9, 5 gives you a 4800px X 2700px image, which may require up to or over 8gb of ram
-# resolution * 60 * ratio = image size
-resolution = 0.5
-ratio = [ 24, 18]
+zoom = float(config.get('misc', 'zoom'))
 
-# will split into 2**imageDiv chunks
-# more chunks = slightly slower, only use for large images if your pc struggles to keep pre-processed data in memory
-# seems to only work with even numbers ¯\_(ツ)_/¯
-# For images smaller than 1920x1080, keep this at or below 4 (16 chunks)
-imageDiv = 2
+resolution = float(config.get('main', 'resolution'))
+rX = float(config.get('main', 'ratioX'))
+rY = float(config.get('main', 'ratioY'))
+ratio = [ rX, rY]
 
-# Fancy (and trippy), but slower colors
-fancyColors = True
+imageDiv = int(config.get('main', 'imageDiv'))
+fancyColors = config.getboolean('colors', 'fancyColors')
+cScale = float(config.get('colors', 'cScale'))
+cOffset = 45 * int(config.get('colors', 'cOffset'))
+colorExponent = float(config.get('colors', 'colorExponent')) 
+lightnessExponent = float(config.get('colors', 'lightnessExponent'))
+lightnessScale = int(config.get('colors', 'lightnessScale'))
 
-# slight color adjustment
-cScale = 0.75
-cOffset = 45 * 2
-colorExponent = 0.05
-lightnessExponent = 2
-lightnessScale = 2
+l = int(config.get('misc', 'limit'))
 
-# iteration limit
-l=2500
-
-# These can override settings
-isMandelbrot = False
-isBurningShip = False
-isJulia = False
-juliaCoord = complex( 0.2, -0.7 )
+isMandelbrot = config.getboolean('main', 'isMandelbrot')
+isBurningShip = config.getboolean('main', 'isBurningShip')
+isJulia = config.getboolean('main', 'isJulia')
+juliaX = float(config.get('misc', 'juliaCoordX'))
+juliaY = float(config.get('misc', 'juliaCoordY'))
+juliaCoord = complex( juliaX, juliaY )
 
 if(isMandelbrot):
+    resolution = 2
+    cScale = 0.5
+    lightnessExponent = 1.5
+    colorExponent = 0.4
     l = 2500
     zoom = 0.7
     ratio = [ 4, 3.5 ]
     position = complex( -0.25, 0.5 )
 
 if(isBurningShip):
-    colorExponent = 0.4
-    zoom = 0.5
-    #zoom = 55
-    #ratio = [ 3, 6 ]
-    ratio = [4,4]
-    #position = complex( -1.124, 0.4685 )
-    position = complex( 0, 0.5 )
+    cScale = 0.75
+    cOffset = 2
+    colorExponent = 0.05
+    lightnessExponent = 2.0
+    lightnessScale = 2
+    resolution = 2
+    zoom = 55
+    ratio = [ 3, 6 ]
+    position = complex( -1.124, 0.4685 )
 
 if(isJulia):
     zoom = 0.7
     position = complex( 0.5, 0.5 )
     l = 2500
     colorExponent = 0.15 * (cScale/2)
-    colorExponent = 0.1
     ratio = [ 3, 3 ]
 
-# Frame setting and image setup
 frame = [ round( 60 * ratio[0] * resolution ), round( 60 * ratio[1] * resolution ) ]
 img = Image.new( 'HSV', [ frame[0], frame[1] ], ( 100, 0, 360 ) )
 data = img.load()
 
-# Saving Info
-informativeName = False
-location = ''
-number = 7
+informativeName = config.getboolean('fileNaming', 'informativeName')
+location = config.get('fileNaming', 'location')
+number = config.get('fileNaming', 'number')
 juliaString = "j(" + str(juliaCoord.real) + ", "+str(juliaCoord.imag) + ")"
 posString = "p(" + str(position.real) + ", " + str(position.imag) + ")"
 if( informativeName ):
-    name = "#" + str(number) + juliaString + posString + " " + str(l) + "l s[" + str(frame[0]) + "," + str(frame[1]) + "] " + " z"+str(zoom)
+    name = "#" + str(number)
+    if(isJulia): name += juliaString
+    name += posString + " " + str(l) + "l s[" + str(frame[0]) + "," + str(frame[1]) + "] " + " z"+str(zoom)
     if( theta != 0 ): name += " rot" + str(theta)
 else: name = "#"+str(number)
 
-consoleReadouts = 5
-scaling = False
-
-exclude = True
-
-def cotanh(n):
-    return np.cosh(n)/np.sinh(n)
+consoleReadouts = int(config.get('misc', 'consoleReadouts'))
+scaling = config.getboolean('main', 'scaling')
+exclude = config.getboolean('misc', 'exclude')
+scale = 1
 
 # Computation function
 def computePixel( pixel ):
@@ -136,8 +137,6 @@ def computePixel( pixel ):
         c = complex( c.real * np.cos(angle) + c.imag * np.sin(angle), (-c.real) * np.sin(angle) + c.imag*np.cos(angle) ) - ( complex( 0.5, 0.5 ) - position )
     else: c -= ( complex( 0.5, 0.5 ) - position )
     z = c
-    z2 = z
-    c2 = c
     p = np.sqrt( ( c.real - 0.25 ) ** 2 + c.imag ** 2 )
     # Exclude cardioid and main bulb
     temp = 12
@@ -170,7 +169,6 @@ def computePixel( pixel ):
                     #z = z**2 - (c*np.arctan(m.real+m.imag))
 
                     z = z**z + ( z / ( c + complex(0.001,0.001) ) ) 
-                    #z = z**z + ( z / (c + complex(0.001,0.001)) ) + np.sin(np.sinh(z)/cotanh(z2))/np.sin(cotanh(c2)/np.sinh(c))
                 
                 if( str(z) == "(nan+nanj)" ):
                     #print("YES")
@@ -247,7 +245,6 @@ if __name__=="__main__":
     print( "\nSAVING IMAGE\n>>Current Runtime: " + str(now.total_seconds()) + "s" )
 
     metadata = writeMetaData()
-    scale = 1
     if( scaling or frame[0] < 1920 or frame[1] < 1920 ): 
         scale = 1920//frame[0] if frame[0] < 1920 else 1920 // frame[1]
     
