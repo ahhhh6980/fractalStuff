@@ -188,7 +188,8 @@ def computePixel( pixel ):
     #return -1"""
 
 if __name__=="__main__":
-
+    exitPls = 0 if input("The parameters are: \nFancy Coloring = "+str(fancyColors)+"\nResolution = "+str(resolution)+"\nFrame = [" + str(frame[0]) + ", " + str(frame[1]) +"]\n"+ str(l) + " iterations per pixel"+"\nAre you sure? Y/n\n")=="Y" else 1
+    if(exitPls==1): raise SystemExit
     #START
     start = datetime.datetime.now()
     now = start
