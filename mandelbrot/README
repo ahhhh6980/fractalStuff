@@ -2,7 +2,7 @@ Programmed by ahhhh6980 ; https://github.com/ahhhh6980
 
 
 check config.ini for configuration; backup.ini is a backup of defaults
-make sure you have Python 3.x, NUMPY, and PIL installed
+make sure you have Python 3.x, NUMPY, PIL, and configparser installed
 
 
 to run, simply run the file through a terminal and it will update you on it's progress
