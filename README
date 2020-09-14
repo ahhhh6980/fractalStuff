@@ -1,6 +1,10 @@
 Programmed by ahhhh6980 ; https://github.com/ahhhh6980
 
 
+Please adjust the resolution and imageDiv appropriately
+Any memory issues you get can be aided with proper understanding and use of these variables.
+
+
 check config.ini for configuration; backup.ini is a backup of defaults
 make sure you have Python 3.x, NUMPY, PIL, and configparser installed
 
