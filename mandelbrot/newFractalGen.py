@@ -266,7 +266,7 @@ consoleReadouts = int(config.get('misc', 'consoleReadouts'))
 scaling = config.getboolean('main', 'scaling')
 exclude = config.getboolean('misc', 'exclude')
 scale = 1
-bwMapName = config.get('filenaming','bwMapName')
+bwMapName = config.get('fileNaming','bwMapName')
 
 useBWmap = config.getboolean('main', 'useBWmap')
 if(useBWmap and not(gif)):
